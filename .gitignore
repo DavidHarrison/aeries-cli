@@ -1,0 +1,6 @@
+#**Important** stops publishing of user info
+aeriesrc
+#temporary log files for the Selenium driver
+*.log
+#temporary files
+*.swp

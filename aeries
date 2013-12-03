@@ -1,0 +1,60 @@
+#!/usr/bin/env python2.7
+
+#system
+import optparse
+import ConfigParser
+import sys
+
+#local
+sys.path.append("../aeries-api")
+import Main
+
+CONFIG_FILE = 'aeriesrc' #'~/.aeriesrc'
+USER_SECTION = 'User'
+         
+def main():
+    p = optparse.OptionParser()
+    p.add_option('--email', '-e',
+                 action='store', dest='email',
+                 default=None)
+    p.add_option('--password', '-p',
+                 action='store', dest='password',
+                 default=None)
+    p.add_option('--grades', '-g',
+                 action='store_true', dest='grades',
+                 default=False)
+    p.add_option('--assignments', '-a',
+                 action='store_true', dest='assignments',
+                 default=False)
+    p.add_option('--gradebook', '-b',
+                 action='store', dest='gradebook',
+                 default=None)
+    (options, arguments) = p.parse_args()
+    #print "Options: " + str(options)
+
+
+    config = ConfigParser.RawConfigParser()
+    config.read(CONFIG_FILE)
+
+    if options.email != None:
+        email = options.email
+    else:
+        email = config.get(USER_SECTION, 'email')
+    if options.password != None:
+        password = options.password
+    else:
+        password = config.get(USER_SECTION, 'password')
+    #print "Email: " + str(email)
+    #print "Password: " + str(password)
+
+    if options.grades:
+        print Main.get('grades', email, password)
+    elif options.assignments:
+        print Main.get('assignments', email, password)
+    elif options.gradebook != None:
+        print Main.get('gradebook', email, password, gradebook=options.gradebook)
+    else:
+        print Main.get('grades', email, password)
+
+if __name__ == '__main__':
+    main()
