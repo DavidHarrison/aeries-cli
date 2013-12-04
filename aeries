@@ -35,7 +35,6 @@ def main():
                  action='store_true', dest='set',
                  default=False)
     (options, arguments) = p.parse_args()
-    #print "Options: " + str(options)
 
 
     config = ConfigParser.RawConfigParser()
@@ -53,8 +52,6 @@ def main():
         password = options.password
     else:
         password = config.get(USER_SECTION, PASSWORD_OPTION)
-    #print "Email: " + str(email)
-    #print "Password: " + str(password)
 
     if options.grades:
         print Main.get('grades', email, password)
@@ -63,6 +60,7 @@ def main():
     elif options.gradebook != None:
         print Main.get('gradebook', email, password, gradebook=options.gradebook)
 
+    # write changes to the config file (if changed with the -s option)
     f = open(CONFIG_FILE, 'w')
     config.write(f)
 
