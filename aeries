@@ -63,13 +63,24 @@ def main():
         password = config.get(USER_SECTION, PASSWORD_OPTION)
 
     if options.grades:
-        print Main.get('grades', email, password)
+        get_what = 'grades'
+        gradebook = None
     elif options.assignments:
-        print Main.get('assignments', email, password)
+        get_what = 'assignments'
+        gradebook = None
     elif options.gradebook != None:
-        print Main.get('gradebook', email, password, gradebook=options.gradebook)
-    else:
+        get_what = 'gradebook'
+        gradebook = options.gradebook
+    elif not options.set:
         parser.print_help()
+        return
+
+    try:
+        print Main.get(get_what, email, password, gradebook=options.gradebook)
+    except ValueError as e:
+        print str(e)
+    except UnboundLocalError:
+        pass
 
     # write changes to the config file (if changed with the -s option)
     f = open(CONFIG_FILE, 'w')
