@@ -9,8 +9,10 @@ import sys
 sys.path.append("../aeries-api")
 import Main
 
-CONFIG_FILE = 'aeriesrc' #'~/.aeriesrc'
-USER_SECTION = 'User'
+CONFIG_FILE =       'aeriesrc' #'~/.aeriesrc'
+USER_SECTION =      'User'
+EMAIL_OPTION =      'email'
+PASSWORD_OPTION =   'password'
          
 def main():
     p = optparse.OptionParser()
@@ -29,6 +31,9 @@ def main():
     p.add_option('--gradebook', '-b',
                  action='store', dest='gradebook',
                  default=None)
+    p.add_option('--set', '-s',
+                 action='store_true', dest='set',
+                 default=False)
     (options, arguments) = p.parse_args()
     #print "Options: " + str(options)
 
@@ -37,13 +42,17 @@ def main():
     config.read(CONFIG_FILE)
 
     if options.email != None:
+        if options.set:
+            config.set(USER_SECTION, EMAIL_OPTION, options.email)
         email = options.email
     else:
-        email = config.get(USER_SECTION, 'email')
+        email = config.get(USER_SECTION, EMAIL_OPTION)
     if options.password != None:
+        if options.set:
+            config.set(USER_SECTION, PASSWORD_OPTION, options.password)
         password = options.password
     else:
-        password = config.get(USER_SECTION, 'password')
+        password = config.get(USER_SECTION, PASSWORD_OPTION)
     #print "Email: " + str(email)
     #print "Password: " + str(password)
 
@@ -53,8 +62,9 @@ def main():
         print Main.get('assignments', email, password)
     elif options.gradebook != None:
         print Main.get('gradebook', email, password, gradebook=options.gradebook)
-    else:
-        print Main.get('grades', email, password)
+
+    f = open(CONFIG_FILE, 'w')
+    config.write(f)
 
 if __name__ == '__main__':
     main()
