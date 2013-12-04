@@ -15,26 +15,35 @@ EMAIL_OPTION =      'email'
 PASSWORD_OPTION =   'password'
          
 def main():
-    p = optparse.OptionParser()
-    p.add_option('--email', '-e',
+    parser = optparse.OptionParser()
+    parser.add_option('--email', '-e',
                  action='store', dest='email',
-                 default=None)
-    p.add_option('--password', '-p',
+                 default=None,
+                 help="retrieve information with EMAIL as email",
+                 metavar="EMAIL")
+    parser.add_option('--password', '-p',
                  action='store', dest='password',
-                 default=None)
-    p.add_option('--grades', '-g',
+                 default=None,
+                 help="retrieve information with PASSWORD as password",
+                 metavar="PASSWORD")
+    parser.add_option('--grades', '-g',
                  action='store_true', dest='grades',
-                 default=False)
-    p.add_option('--assignments', '-a',
+                 default=False,
+                 help="retrieve grade information")
+    parser.add_option('--assignments', '-a',
                  action='store_true', dest='assignments',
-                 default=False)
-    p.add_option('--gradebook', '-b',
+                 default=False,
+                 help="retrieve the assignments on this month's calendar")
+    parser.add_option('--gradebook', '-b',
                  action='store', dest='gradebook',
-                 default=None)
-    p.add_option('--set', '-s',
+                 default=None,
+                 help="retrieve gradebook that matches with regular expression GRADEBOOK",
+                 metavar="GRADEBOOK")
+    parser.add_option('--set', '-s',
                  action='store_true', dest='set',
-                 default=False)
-    (options, arguments) = p.parse_args()
+                 default=False,
+                 help="set specified EMAIL and/or PASSWORD as the option in the config file")
+    (options, arguments) = parser.parse_args()
 
 
     config = ConfigParser.RawConfigParser()
@@ -59,6 +68,8 @@ def main():
         print Main.get('assignments', email, password)
     elif options.gradebook != None:
         print Main.get('gradebook', email, password, gradebook=options.gradebook)
+    else:
+        parser.print_help()
 
     # write changes to the config file (if changed with the -s option)
     f = open(CONFIG_FILE, 'w')
