@@ -3,3 +3,4 @@ Command line interface to aeries-api. Currently in the early stages and is not c
 
 # TODO
 - Write man page
+- Format output as a pretty table
