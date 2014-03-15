@@ -1,13 +1,17 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python3.3
 
 import os
+try:
+    import simplejson as json
+except:
+    import json
 
-AERIES_API_DIR = os.path.expanduser('~/Programming/aeries-api')
-AERIES_CLI_DIR = os.path.expanduser('~/Programming/aeries-cli')
+AERIES_API_DIR = os.path.expanduser('~/Programming/aeries/api')
+AERIES_CLI_DIR = os.path.expanduser('~/Programming/aeries/cli')
 
 #system
 import optparse
-import ConfigParser
+import configparser
 import sys
 
 #local
@@ -22,36 +26,36 @@ PASSWORD_OPTION =   'password'
 def main():
     parser = optparse.OptionParser()
     parser.add_option('--email', '-e',
-                 action='store', dest='email',
-                 default=None,
-                 help="retrieve information with EMAIL as email",
-                 metavar="EMAIL")
+                      action='store', dest='email',
+                      default=None,
+                      help="retrieve information with EMAIL as email",
+                      metavar="EMAIL")
     parser.add_option('--password', '-p',
-                 action='store', dest='password',
-                 default=None,
-                 help="retrieve information with PASSWORD as password",
-                 metavar="PASSWORD")
+                      action='store', dest='password',
+                      default=None,
+                      help="retrieve information with PASSWORD as password",
+                      metavar="PASSWORD")
     parser.add_option('--grades', '-g',
-                 action='store_true', dest='grades',
-                 default=False,
-                 help="retrieve grade information")
+                      action='store_true', dest='grades',
+                      default=False,
+                      help="retrieve grade information")
     parser.add_option('--assignments', '-a',
-                 action='store_true', dest='assignments',
-                 default=False,
-                 help="retrieve the assignments on this month's calendar")
+                      action='store_true', dest='assignments',
+                      default=False,
+                      help="retrieve the assignments on this month's calendar")
     parser.add_option('--gradebook', '-b',
-                 action='store', dest='gradebook',
-                 default=None,
-                 help="retrieve gradebook that matches with regular expression GRADEBOOK",
-                 metavar="GRADEBOOK")
+                      action='store', dest='gradebook',
+                      default=None,
+                      help="retrieve gradebook that matches with regular expression GRADEBOOK",
+                      metavar="GRADEBOOK")
     parser.add_option('--set', '-s',
-                 action='store_true', dest='set',
-                 default=False,
-                 help="set specified EMAIL and/or PASSWORD as the option in the config file")
+                      action='store_true', dest='set',
+                      default=False,
+                      help="set specified EMAIL and/or PASSWORD as the option in the config file")
     (options, arguments) = parser.parse_args()
 
 
-    config = ConfigParser.RawConfigParser()
+    config = configparser.RawConfigParser()
     config.read(CONFIG_FILE)
 
     if options.email != None:
@@ -80,16 +84,30 @@ def main():
         parser.print_help()
         return
 
-    try:
-        print Main.get(get_what, email, password, gradebook=options.gradebook)
-    except ValueError as e:
-        print str(e)
-    except UnboundLocalError:
-        pass
-
     # write changes to the config file (if changed with the -s option)
     f = open(CONFIG_FILE, 'w')
     config.write(f)
+
+    try:
+        data = Main.get(get_what, email, password, gradebook=options.gradebook)
+    except ValueError as e:
+        print(str(e))
+    except UnboundLocalError:
+        pass
+    else:
+        #data = table(get_what, data)
+        print(data)
+
+def table(what, data_json):
+    data = json.load(data_json)
+    entries = []
+    if what == grades:
+        for gradebook in data:
+            entry_text = '|'
+            for item in ['period', 'name', 'teacher', 'percent', 'mark', 'missing assignments', 'updated']:
+                entry_text += ' ' + item + ' |'
+            gradebook.append(entry_text)
+
 
 if __name__ == '__main__':
     main()

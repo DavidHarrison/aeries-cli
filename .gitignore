@@ -4,3 +4,4 @@ aeriesrc
 *.log
 #temporary files
 *.swp
+*.bak
